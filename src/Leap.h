@@ -12,7 +12,7 @@
 #include "LeapMath.h"
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <cstring>
 
 // Define integer types for Visual Studio 2008 and earlier
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
@@ -2948,7 +2948,7 @@ namespace Leap {
      */
     void data(unsigned char* dst) const {
       const unsigned char* src = data();
-      std::copy(src, src + width() * height(), dst);
+      memcpy(dst, src, width() * height() * sizeof(unsigned char));
     }
     /*
      * Do not call this version of distortion(). It is intended only as a helper for C#,
@@ -2959,7 +2959,7 @@ namespace Leap {
      */
     void distortion(float* dst) const {
       const float* src = distortion();
-      std::copy(src, src + distortionWidth() * distortionHeight(), dst);
+      memcpy(dst, src, distortionWidth() * distortionHeight() * sizeof(float));
     }
     /**
      * The image width.
@@ -3901,7 +3901,7 @@ namespace Leap {
     LEAP_EXPORT ImageList();
 
     /**
-     * Yhe number of images in this list.
+     * The number of images in this list.
      *
      * @returns The number of images in this list.
      * @since 2.1.0
@@ -4147,6 +4147,10 @@ namespace Leap {
      * Get valid Frame objects by calling the Controller::frame() function.
      *
      * \include Frame_Frame.txt
+     *
+     * The only time you should use this constructor is before deserializing
+     * serialized frame data. Call ``Frame::deserialize(string)`` to recreate
+     * a saved Frame.
      *
      * @since 1.0
      */
@@ -4653,10 +4657,11 @@ namespace Leap {
     LEAP_EXPORT friend std::ostream& operator<<(std::ostream&, const Frame&);
 
     /**
-     * Encodings the Frame object to a byte string.
+     * Encodes this Frame object as a byte string.
      *
      * \include Frame_serialize.txt
      *
+     * @returns The serialized string encoding the data for this frame.
      * @since 2.1.0
      */
     std::string serialize() const {
@@ -4668,9 +4673,22 @@ namespace Leap {
     }
 
     /**
-     * Decodes a byte string to restore properties of this Frame.
+     * Decodes a byte string to replace the properties of this Frame.
+     *
+     * Any existing data in the frame is destroyed. If you have references to 
+     * child objects (hands, fingers, etc.), these are preserved as long as the 
+     * references remain in scope.
      *
      * \include Frame_deserialize.txt
+     *
+     * **Note:** The result of calling functions which take 
+     * another Frame object as a parameter is undefined when either frame has
+     * been deserialized. For example, calling ``gestures(sinceFrame)`` on a
+     * deserialized frame or with a deserialized frame as parameter (or both)
+     * does not necessarily return all gestures that occured between the two
+     * frames. Motion functions, like ``scaleFactor(startFrame)``, are more
+     * likely to return reasonably results, but could return anomalous results
+     * in some cases.
      *
      * @since 2.1.0
      */
@@ -4678,17 +4696,17 @@ namespace Leap {
       deserializeCString(str.data(), str.length());
     }
 
-    /**
+    /*
      * Do not call this version of serialize(). It is intended only as
      * a helper for C#, Java, and other language bindings.
      */
     void serialize(unsigned char* ptr) const {
       size_t length;
       const unsigned char* cstr = reinterpret_cast<const unsigned char*>(serializeCString(length));
-      std::copy(cstr, cstr + length, ptr);
+      memcpy(ptr, cstr, length * sizeof(unsigned char));
     }
 
-    /**
+    /*
      * Do not call serializeLength(). It is intended only as a helper for
      * C#, Java, and other language bindings. To get the length of the
      * serialized byte array, use serialize().length()
@@ -4699,7 +4717,7 @@ namespace Leap {
       return static_cast<int>(length);
     }
 
-    /**
+    /*
      * Do not call this version of deserialize(). It is intended only as
      * a helper for C#, Java, and other language bindings.
      */
@@ -5079,9 +5097,17 @@ namespace Leap {
     /**
      * The supported controller policies.
      *
-     * Currently, the only supported policy is the background frames policy,
-     * which determines whether your application receives frames of tracking
-     * data when it is not the focused, foreground application.
+     * The supported policy flags are:
+     *
+     * * POLICY_BACKGROUND_FRAMES -- requests that your application receives frames
+     *   when it is not the foreground application for user input.
+     *
+     * * POLICY_IMAGES -- request that your application receives images from the 
+     *   device cameras.
+     *
+     * Both these policies can be denied if the user has disabled the feature on 
+     * their Leap Motion control panel.
+     *
      * @since 1.0
      */
     enum PolicyFlag {
@@ -5097,7 +5123,7 @@ namespace Leap {
       POLICY_BACKGROUND_FRAMES = (1 << 0),
 
       /**
-       * Receive raw images.
+       * Receive raw images from sensor cameras.
        */
       POLICY_IMAGES = (1 << 1),
 #ifdef SWIGCSHARP
