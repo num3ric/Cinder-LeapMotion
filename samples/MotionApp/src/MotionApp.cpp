@@ -35,9 +35,9 @@
 */
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Light.h"
 #include "cinder/params/Params.h"
 #include "Cinder-LeapMotion.h"
 

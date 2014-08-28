@@ -38,6 +38,8 @@
 
 #include "cinder/app/App.h"
 
+#include "glm/gtc/type_ptr.hpp"
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -58,55 +60,45 @@ Channel8u toChannel8u( const Leap::Image& img, bool copyData )
 	return channel;
 }
 
-Matrix33f toMatrix33f( const Leap::Matrix& m )
+mat3 toMat3( const Leap::Matrix& m )
 {
-	Matrix33f mtx;
 	Leap::FloatArray a = m.toArray3x3();
-	for ( size_t i = 0; i < 3; ++i ) {
-		size_t j = i * 3;
-		Vec3f row( a[ j + 0 ], a[ j + 1 ], a[ j + 2 ] );
-		mtx.setRow( i, row );
-	}
-	return mtx;
+	mat3 mtx = glm::make_mat3( &a[0] );
+	return transpose( mtx );
 }
 
-Leap::Matrix toLeapMatrix( const Matrix33f& m )
+Leap::Matrix toLeapMatrix( const mat3& m )
 {
 	Leap::Matrix matrix;
-	matrix.xBasis = Leap::Vector( m.m00, m.m01, m.m02 );
-	matrix.yBasis = Leap::Vector( m.m10, m.m11, m.m12 );
-	matrix.zBasis = Leap::Vector( m.m20, m.m21, m.m22 );
+	matrix.xBasis = Leap::Vector( m[0][0], m[0][1], m[0][2] );
+	matrix.yBasis = Leap::Vector( m[1][0], m[1][1], m[1][2] );
+	matrix.zBasis = Leap::Vector( m[2][0], m[2][1], m[2][2] );
 	return matrix;
 }
 	
-Matrix44f toMatrix44f( const Leap::Matrix& m )
+mat4 toMat4( const Leap::Matrix& m )
 {
-	Matrix44f mtx;
 	Leap::FloatArray a = m.toArray4x4();
-	for ( size_t i = 0; i < 4; ++i ) {
-		size_t j = i * 4;
-		Vec4f row( a[ j + 0 ], a[ j + 1 ], a[ j + 2 ], a[ j + 3 ] );
-		mtx.setRow( i, row );
-	}
-	return mtx;
+	mat4 mtx = glm::make_mat4( &a[0] );
+	return transpose( mtx );
 }
 	
-Leap::Matrix toLeapMatrix( const Matrix44f m )
+Leap::Matrix toLeapMatrix( const mat4 m )
 {
 	Leap::Matrix matrix;
-	matrix.xBasis = Leap::Vector( m.m00, m.m01, m.m02 );
-	matrix.yBasis = Leap::Vector( m.m10, m.m11, m.m12 );
-	matrix.zBasis = Leap::Vector( m.m20, m.m21, m.m22 );
-	matrix.origin = Leap::Vector( m.m30, m.m31, m.m32 );
+	matrix.xBasis = Leap::Vector( m[0][0], m[0][1], m[0][2] );
+	matrix.yBasis = Leap::Vector( m[1][0], m[1][1], m[1][2] );
+	matrix.zBasis = Leap::Vector( m[2][0], m[2][1], m[2][2] );
+	matrix.origin = Leap::Vector( m[3][0], m[3][1], m[3][2] );
 	return matrix;
 }
 
-Vec3f toVec3f( const Leap::Vector& v )
+vec3 toVec3( const Leap::Vector& v )
 {
-	return Vec3f( v.x, v.y, v.z );
+	return vec3( v.x, v.y, v.z );
 }
 	
-Leap::Vector toLeapVector( const Vec3f& v )
+Leap::Vector toLeapVector( const vec3& v )
 {
 	return Leap::Vector( v.x, v.y, v.z );
 }
