@@ -34,7 +34,8 @@
 * 
 */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
@@ -42,7 +43,9 @@
 #include "Cinder-LeapMotion.h"
 #include "Ribbon.h"
 
-class TracerApp : public ci::app::AppBasic
+using namespace cinder;
+
+class TracerApp : public app::AppNative
 {
 public:
 	void						draw();
@@ -55,8 +58,8 @@ private:
 	Leap::Frame					mFrame;
 	LeapMotion::DeviceRef		mDevice;
 	
-	ci::gl::Fbo					mFbo[ 3 ];
-	ci::gl::GlslProg			mShader[ 2 ];
+	ci::gl::FboRef				mFbo[ 3 ];
+	ci::gl::GlslProgRef			mShader[ 2 ];
 
 	ci::CameraPersp				mCamera;
 
@@ -79,56 +82,53 @@ using namespace std;
 void TracerApp::draw()
 {
 	// Add to accumulation buffer
-	mFbo[ 0 ].bindFramebuffer();
-	gl::setViewport( mFbo[ 0 ].getBounds() );
-	gl::setMatricesWindow( mFbo[ 0 ].getSize() );
-	gl::enableAlphaBlending();
-
-	// Dim last frame
-	gl::color( ColorAf( Colorf::black(), 0.03f ) );
-	gl::drawSolidRect( Rectf( mFbo[ 0 ].getBounds() ) );
-
-	// Draw finger tips into the accumulation buffer
-	gl::setMatrices( mCamera );
-	gl::enableAdditiveBlending();
-	for ( RibbonMap::const_iterator iter = mRibbons.begin(); iter != mRibbons.end(); ++iter ) {
-		iter->second.draw();
+	{
+		gl::ScopedFramebuffer bind( mFbo[ 0 ] );
+		gl::viewport( mFbo[ 0 ]->getSize() );
+		gl::setMatricesWindow( mFbo[ 0 ]->getSize() );
+		gl::enableAlphaBlending();
+		
+		// Dim last frame
+		gl::color( ColorAf( Colorf::black(), 0.03f ) );
+		gl::drawSolidRect( Rectf( mFbo[ 0 ]->getBounds() ) );
+		
+		// Draw finger tips into the accumulation buffer
+		gl::setMatrices( mCamera );
+		gl::enableAdditiveBlending();
+		for ( auto& kv : mRibbons ) {
+			kv.second.draw();
+		}
 	}
-	mFbo[ 0 ].unbindFramebuffer();
+
 
 	// Blur the accumulation buffer
 	gl::enable( GL_TEXTURE_2D );
 	gl::enableAlphaBlending();
 	gl::color( ColorAf::white() );
-	Vec2f pixel	= ( Vec2f::one() / Vec2f( mFbo[ 0 ].getSize() ) ) * 3.0f;
+	vec2 pixel	= ( vec2( 1 ) / vec2( mFbo[ 0 ]->getSize() ) ) * 3.0f;
 	for ( size_t i = 0; i < 2; ++i ) {
-		mFbo[ i + 1 ].bindFramebuffer();
-		gl::clear();
-		
-		mShader[ i ].bind();
-		mShader[ i ].uniform( "size",	pixel );
-		mShader[ i ].uniform( "tex",	0 );
+		gl::ScopedFramebuffer bind( mFbo[ i + 1 ] );
+		gl::ScopedGlslProg shader( mShader[ i ] );
+		gl::ScopedTextureBind tex0( mFbo[ i ]->getColorTexture() );
+
+		mShader[ i ]->uniform( "size",	pixel );
+		mShader[ i ]->uniform( "tex",	0 );
 				
-		gl::Texture& texture = mFbo[ i ].getTexture();
-		texture.bind();
-		gl::drawSolidRect( Rectf( mFbo[ i ].getBounds() ) );
-		texture.unbind();
-		
-		mShader[ i ].unbind();
-		mFbo[ i + 1 ].unbindFramebuffer();
+		gl::clear();
+		gl::drawSolidRect( Rectf( mFbo[ i ]->getBounds() ) );
 	}
 
 	// Draw blurred image
 	gl::setMatricesWindow( getWindowSize(), false );
 	gl::color( ColorAf::white() );
-	mFbo[ 0 ].bindTexture();
+	mFbo[ 0 ]->bindTexture();
 	gl::drawSolidRect( Rectf( getWindowBounds() ) );
-	mFbo[ 0 ].unbindTexture();
+	mFbo[ 0 ]->unbindTexture();
 	
 	gl::color( ColorAf( Colorf::white(), 0.8f ) );
-	mFbo[ 2 ].bindTexture();
+	mFbo[ 2 ]->bindTexture();
 	gl::drawSolidRect( Rectf( getWindowBounds() ) );
-	mFbo[ 2 ].unbindTexture();
+	mFbo[ 2 ]->unbindTexture();
 	gl::disableAlphaBlending();
 	gl::disable( GL_TEXTURE_2D );
 
@@ -155,7 +155,7 @@ void TracerApp::screenShot()
 void TracerApp::setup()
 {
 	mCamera	= CameraPersp( getWindowWidth(), getWindowHeight(), 60.0f, 0.01f, 1000.0f );
-	mCamera.lookAt( Vec3f( 0.0f, 93.75f, 250.0f ), Vec3f( 0.0f, 250.0f, 0.0f ) );
+	mCamera.lookAt( vec3( 0.0f, 93.75f, 250.0f ), vec3( 0.0f, 250.0f, 0.0f ) );
 	
 	mDevice = Device::create();
 	mDevice->connectEventHandler( [ & ]( Leap::Frame frame )
@@ -165,20 +165,20 @@ void TracerApp::setup()
  );
 
 	try {
-		mShader[ 0 ]	= gl::GlslProg( loadResource( RES_GLSL_PASS_THROUGH_VERT ), loadResource( RES_GLSL_BLUR_X_FRAG ) );
+		mShader[ 0 ]	= gl::GlslProg::create( loadResource( RES_GLSL_PASS_THROUGH_VERT ), loadResource( RES_GLSL_BLUR_X_FRAG ) );
 	} catch ( gl::GlslProgCompileExc ex ) {
 		console() << "Unable to compile blur X shader: \n" << string( ex.what() ) << "\n";
 		quit();
 	}
 	try {
-		mShader[ 1 ]	= gl::GlslProg( loadResource( RES_GLSL_PASS_THROUGH_VERT ), loadResource( RES_GLSL_BLUR_Y_FRAG ) );
+		mShader[ 1 ]	= gl::GlslProg::create( loadResource( RES_GLSL_PASS_THROUGH_VERT ), loadResource( RES_GLSL_BLUR_Y_FRAG ) );
 	} catch ( gl::GlslProgCompileExc ex ) {
 		console() << "Unable to compile blur Y shader: \n" << string( ex.what() ) << "\n";
 		quit();
 	}
 
 	mFrameRate	= 0.0f;
-	mParams = params::InterfaceGl::create( "Params", Vec2i( 200, 105 ) );
+	mParams = params::InterfaceGl::create( "Params", ivec2( 200, 105 ) );
 	mParams->addParam( "Frame rate",	&mFrameRate,				"", true );
 	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
 	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
@@ -186,24 +186,25 @@ void TracerApp::setup()
 	gl::enable( GL_POLYGON_SMOOTH );
 	glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
 	
-	gl::Fbo::Format format;
+//	gl::Fbo::Format format;
+	gl::Texture::Format texFormat;
 #if defined( GL_RGBA32F )
-	format.setColorInternalFormat( GL_RGBA32F );
-#else if defined( GL_RGBA32F_ARB )
-	format.setColorInternalFormat( GL_RGBA32F_ARB );
+	texFormat.setInternalFormat( GL_RGBA32F );
+#elif defined( GL_RGBA32F_ARB )
+	texFormat.setInternalFormat( GL_RGBA32F_ARB );
 #endif
-	format.setMinFilter( GL_LINEAR );
-	format.setMagFilter( GL_LINEAR );
-	format.setWrap( GL_CLAMP, GL_CLAMP );
+	texFormat.setMinFilter( GL_LINEAR );
+	texFormat.setMagFilter( GL_LINEAR );
+	texFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
 	for ( size_t i = 0; i < 3; ++i ) {
-		mFbo[ i ]	= gl::Fbo( getWindowWidth(), getWindowHeight(), format );
-		mFbo[ i ].bindFramebuffer();
-		gl::setViewport( mFbo[ i ].getBounds() );
+		mFbo[ i ]	= gl::Fbo::create( getWindowWidth(), getWindowHeight(), gl::Fbo::Format().colorTexture( texFormat ) );
+		mFbo[ i ]->bindFramebuffer();
+		gl::viewport( mFbo[ i ]->getSize() );
 		gl::clear();
-		mFbo[ i ].unbindFramebuffer();
+		mFbo[ i ]->unbindFramebuffer();
 	}
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 }
 
 void TracerApp::update()
@@ -211,17 +212,12 @@ void TracerApp::update()
 	mFrameRate = getAverageFps();
 
 	// Process hand data
-	const Leap::HandList& hands = mFrame.hands();
-	for ( Leap::HandList::const_iterator handIter = hands.begin(); handIter != hands.end(); ++handIter ) {
-		const Leap::Hand& hand = *handIter;
-		
-		const Leap::PointableList& pointables = hand.pointables();
-		for ( Leap::PointableList::const_iterator pointIter = pointables.begin(); pointIter != pointables.end(); ++pointIter ) {
-			const Leap::Pointable& pointable = *pointIter;
+	for ( auto& hand : mFrame.hands() ) {
+		for ( const auto& pointable : hand.pointables() ) {
 
 			int32_t id = pointable.id();
 			if ( mRibbons.find( id ) == mRibbons.end() ) {
-				Vec3f v = randVec3f() * 0.01f;
+				vec3 v = randVec3f() * 0.01f;
 				v.x = math<float>::abs( v.x );
 				v.y = math<float>::abs( v.y );
 				v.z = math<float>::abs( v.z );
@@ -229,15 +225,15 @@ void TracerApp::update()
 				Ribbon ribbon( id, color );
 				mRibbons[ id ] = ribbon;
 			}
-			float width = math<float>::abs( pointable.tipVelocity().y ) * 0.0025f;
-			width		= math<float>::max( width, 5.0f );
-			mRibbons[ id ].addPoint( LeapMotion::toVec3f( pointable.tipPosition() ), width );
+			float width = abs( pointable.tipVelocity().y ) * 0.0025f;
+			width		= max( width, 5.0f );
+			mRibbons[ id ].addPoint( LeapMotion::toVec3( pointable.tipPosition() ), width );
 		}
 	}
 
 	// Update ribbons
-	for ( RibbonMap::iterator iter = mRibbons.begin(); iter != mRibbons.end(); ++iter ) {
-		iter->second.update();
+	for ( auto& kv : mRibbons ) {
+		kv.second.update();
 	}
 }
 

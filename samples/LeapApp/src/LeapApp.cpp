@@ -42,26 +42,7 @@
 #include "cinder/params/Params.h"
 #include "Cinder-LeapMotion.h"
 
-#include "cinder/GeomIo.h"
-#include "cinder/gl/VboMesh.h"
-#include "cinder/gl/Context.h"
-namespace cinder {
-	namespace gl {
-		void drawVector( const vec3& start, const vec3& end, float headLength, float headRadius )
-		{
-			drawLine( start, end );
-			
-			auto ctx = context();
-			ctx->pushVao();
-			ctx->setDefaultShaderVars();
-			vec3 dir = end - start;
-			vec3 ori = end - normalize( dir ) * headLength;
-			auto cone = geom::Cone().base( headRadius ).height( headLength ).origin( ori ).direction( dir );
-			draw( VboMesh::create( cone ) );
-			ctx->popVao();
-		}
-	}
-}
+#include "glm/gtx/euler_angles.hpp"
 
 class LeapApp : public ci::app::AppBasic
 {
@@ -103,9 +84,10 @@ void LeapApp::draw()
 	
 	float headLength = 6.0f;
 	float headRadius = 3.0f;
-	const Leap::HandList& hands = mFrame.hands();
-	for ( Leap::HandList::const_iterator handIter = hands.begin(); handIter != hands.end(); ++handIter ) {
-		const Leap::Hand& hand = *handIter;
+	
+	quat vrRotation( vec3( 0, M_PI, M_PI * -0.3f ) );
+	
+	for( const auto& hand : mFrame.hands() ) {
 
 		// Get hand data
 		vec3 handDir		= LeapMotion::toVec3( hand.direction() );
@@ -144,10 +126,7 @@ void LeapApp::draw()
 		gl::drawVector( palmPos, palmPos + palmVel * 0.05f, headLength, headRadius );
 
 		// Fingers
-		const Leap::PointableList& pointables = hand.pointables();
-		for ( Leap::PointableList::const_iterator pointIter = pointables.begin(); pointIter != pointables.end(); ++pointIter ) {
-			const Leap::Pointable& pointable = *pointIter;
-
+		for ( const auto& pointable : hand.pointables() ) {
 			// Get pointable data
 			vec3 dir		= LeapMotion::toVec3( pointable.direction() );
 			bool isTool		= pointable.isTool();

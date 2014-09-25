@@ -15,7 +15,6 @@
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		AE15E03E16F39CE700238DC0 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE15E03D16F39CE700238DC0 /* QuickTime.framework */; };
 		AE1BA8741667F1BD00E8CDFD /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = AE1BA8731667F1BD00E8CDFD /* CinderApp.icns */; };
 		AE362B64166801590094CD37 /* libLeap.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = AE362B63166801590094CD37 /* libLeap.dylib */; };
 		AE362B65166801950094CD37 /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE362B63166801590094CD37 /* libLeap.dylib */; };
@@ -25,6 +24,8 @@
 		AEB2BA8F16B08A9500FA21E6 /* blur_y_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = AEB2BA8C16B08A9500FA21E6 /* blur_y_frag.glsl */; };
 		AEB2BA9016B08A9500FA21E6 /* pass_through_vert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = AEB2BA8D16B08A9500FA21E6 /* pass_through_vert.glsl */; };
 		AEFC15AD17EA2BF2000B184F /* Cinder-LeapMotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEFC15AB17EA2BF2000B184F /* Cinder-LeapMotion.cpp */; };
+		B0DEDEBD19C8DD52007AD8D7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0DEDEBC19C8DD52007AD8D7 /* AVFoundation.framework */; };
+		B0DEDEBF19C8DD5C007AD8D7 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0DEDEBE19C8DD5B007AD8D7 /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,8 +53,7 @@
 		334F79182B9947F2A1A4632B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* LeapApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = LeapApp.app; path = TracerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AE15E03D16F39CE700238DC0 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		8D1107320486CEB800E47090 /* TracerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TracerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE1BA8711667F14D00E8CDFD /* Leap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Leap.h; path = ../../../src/Leap.h; sourceTree = "<group>"; };
 		AE1BA8731667F1BD00E8CDFD /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = CinderApp.icns; sourceTree = "<group>"; };
 		AE362B63166801590094CD37 /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libLeap.dylib; path = ../../../lib/macosx/libLeap.dylib; sourceTree = "<group>"; };
@@ -67,6 +67,8 @@
 		AEC8E2AC16A7595A002B7DAD /* LeapMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeapMath.h; path = ../../../src/LeapMath.h; sourceTree = "<group>"; };
 		AEFC15AB17EA2BF2000B184F /* Cinder-LeapMotion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "Cinder-LeapMotion.cpp"; path = "../../../src/Cinder-LeapMotion.cpp"; sourceTree = "<group>"; };
 		AEFC15AC17EA2BF2000B184F /* Cinder-LeapMotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Cinder-LeapMotion.h"; path = "../../../src/Cinder-LeapMotion.h"; sourceTree = "<group>"; };
+		B0DEDEBC19C8DD52007AD8D7 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B0DEDEBE19C8DD5B007AD8D7 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		CC680A809AF041E8BE4D8AE5 /* TracerApp_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TracerApp_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,7 +77,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AE15E03E16F39CE700238DC0 /* QuickTime.framework in Frameworks */,
+				B0DEDEBF19C8DD5C007AD8D7 /* CoreMedia.framework in Frameworks */,
+				B0DEDEBD19C8DD52007AD8D7 /* AVFoundation.framework in Frameworks */,
 				AE362B65166801950094CD37 /* libLeap.dylib in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
@@ -111,7 +114,6 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AE15E03D16F39CE700238DC0 /* QuickTime.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
@@ -137,7 +139,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* LeapApp.app */,
+				8D1107320486CEB800E47090 /* TracerApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,6 +182,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B0DEDEBE19C8DD5B007AD8D7 /* CoreMedia.framework */,
+				B0DEDEBC19C8DD52007AD8D7 /* AVFoundation.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -216,7 +220,7 @@
 			name = TracerApp;
 			productInstallPath = "$(HOME)/Applications";
 			productName = TuioMultitouchBasic;
-			productReference = 8D1107320486CEB800E47090 /* LeapApp.app */;
+			productReference = 8D1107320486CEB800E47090 /* TracerApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -225,7 +229,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TracerApp" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -277,7 +281,6 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -306,7 +309,6 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -339,7 +341,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CINDER_PATH = ../../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -348,7 +349,8 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)boost\"";
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = ../../../lib/macosx;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)include\" ../../../src";
 				VALID_ARCHS = "i386 x86_64";
@@ -359,7 +361,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CINDER_PATH = ../../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -368,7 +369,7 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)boost\"";
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = ../../../lib/macosx;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)include\" ../../../src";
 				VALID_ARCHS = "i386 x86_64";

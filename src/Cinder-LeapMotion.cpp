@@ -64,7 +64,7 @@ mat3 toMat3( const Leap::Matrix& m )
 {
 	Leap::FloatArray a = m.toArray3x3();
 	mat3 mtx = glm::make_mat3( &a[0] );
-	return transpose( mtx );
+	return glm::transpose( mtx );
 }
 
 Leap::Matrix toLeapMatrix( const mat3& m )
@@ -80,7 +80,7 @@ mat4 toMat4( const Leap::Matrix& m )
 {
 	Leap::FloatArray a = m.toArray4x4();
 	mat4 mtx = glm::make_mat4( &a[0] );
-	return transpose( mtx );
+	return glm::transpose( mtx );
 }
 	
 Leap::Matrix toLeapMatrix( const mat4 m )
